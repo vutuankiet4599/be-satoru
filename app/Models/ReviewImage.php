@@ -14,4 +14,9 @@ class ReviewImage extends Model
     protected $guarded = ['id'];
 
     public $timestamps = false;
+
+    public function review()
+    {
+        return $this->belongsTo(Review::class, 'review_id', 'id');
+    }
 }

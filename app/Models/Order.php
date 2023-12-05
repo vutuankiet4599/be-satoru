@@ -12,4 +12,9 @@ class Order extends Model
     protected $guarded = ['id'];
 
     public $timestamps = false;
+
+    public function workspace()
+    {
+        return $this->belongsTo(Workspace::class, 'workspace_id', 'id');
+    }
 }

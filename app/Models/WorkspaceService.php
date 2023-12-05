@@ -14,4 +14,14 @@ class WorkspaceService extends Model
     protected $guarded = ['id'];
 
     public $timestamps = false;
+
+    public function workspace()
+    {
+        return $this->belongsTo(Workspace::class, 'workspace_id', 'id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id', 'id');
+    }
 }
