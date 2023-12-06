@@ -12,4 +12,9 @@ class WorkspaceImage extends Model
     protected $table = 'workspaces_images';
 
     protected $guarded = ['id'];
+
+    public function workspace()
+    {
+        return $this->belongsTo(Workspace::class, 'workspace_id', 'id');
+    }
 }

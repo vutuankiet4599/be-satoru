@@ -12,4 +12,9 @@ class Service extends Model
     protected $fillable = ['service_name'];
 
     public $timestamps = false;
+
+    public function workspaceServices()
+    {
+        return $this->hasMany(WorkspaceService::class, 'service_id', 'id');
+    }
 }
