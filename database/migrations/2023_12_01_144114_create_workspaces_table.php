@@ -15,8 +15,8 @@ return new class extends Migration
         Schema::create('workspaces', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->dateTime('opening_hour');
-            $table->dateTime('closing_hour');
+            $table->time('opening_hour');
+            $table->time('closing_hour');
             $table->text('description');
             $table->string('phone_number')->unique();
             $table->string('address');
