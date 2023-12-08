@@ -25,7 +25,7 @@ class WorkspaceSearchRequest extends FormRequest
             'name' => 'string',
             'address' => 'string',
             'area' => 'array',
-            'area.*' => 'string',
+            'area.*' => 'int',
             'opening_hour' => 'string',
             'closing_hour' => 'string',
             'service' => 'array',
