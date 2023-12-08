@@ -20,3 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/workspaces/search', [WorkspaceController::class, 'search']);
+Route::get('/workspaces/recommend', [WorkspaceController::class, 'recommend']);
+
+Route::get('/districts', [WorkspaceController::class, 'index']);

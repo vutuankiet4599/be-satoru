@@ -25,11 +25,7 @@ class WorkspaceController extends Controller
             })->when(isset($validated['address']) && !empty($validated['address']), function ($q) use ($validated) {
                 return $q->where('address', 'like', '%' . $validated['address'] . '%');
             })->when(isset($validated['area']) && !empty($validated['area']), function ($q) use ($validated) {
-                foreach ($validated['area'] as $area)
-                {
-                    $q->orWhere('address', 'like', '%' . $area . '%');
-                }
-                return $q;
+                return $q->whereIn('disctrict_id', '%' . $validated['area']);
             })->when(isset($validated['opening_hour']) && !empty($validated['opening_hour']) && isset($validated['closing_hour']) && !empty($validated['closing_hour']), function ($q) use ($validated) {
                 $op = Carbon::createFromFormat('h:i A', $validated['opening_hour'])->format('H:i:s');
                 $cls = Carbon::createFromFormat('h:i A', $validated['closing_hour'])->format('H:i:s');
@@ -45,5 +41,15 @@ class WorkspaceController extends Controller
             })->paginate(10);
 
         return response()->json(WorkspaceResource::collection($data)->response()->getData());
+    }
+
+    public function recommend()
+    {
+        $data = Workspace::with(['workspaceImages'])
+            ->orderBy('average_rating', 'desc')
+            ->take(12)
+            ->get();
+        
+        return response()->json(WorkspaceResource::collection($data));
     }
 }

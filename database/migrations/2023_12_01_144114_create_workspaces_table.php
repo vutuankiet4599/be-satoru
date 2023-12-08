@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('address');
             $table->enum('status', [0, 1, 2])->nullable();
             $table->bigInteger('price')->unsigned()->default(0);
-            $table->decimal('lat');
-            $table->decimal('long');
+            $table->double('lat');
+            $table->double('long');
             $table->float('average_rating');
         });
     }

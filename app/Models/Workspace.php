@@ -27,4 +27,9 @@ class Workspace extends Model
     {
         return $this->hasMany(Order::class, 'workspace_id', 'id');
     }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
 }
