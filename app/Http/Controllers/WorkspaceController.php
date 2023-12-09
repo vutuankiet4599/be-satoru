@@ -29,8 +29,8 @@ class WorkspaceController extends Controller
             })->when(isset($validated['opening_hour']) && !empty($validated['opening_hour']) && isset($validated['closing_hour']) && !empty($validated['closing_hour']), function ($q) use ($validated) {
                 $op = Carbon::createFromFormat('h:i A', $validated['opening_hour'])->format('H:i:s');
                 $cls = Carbon::createFromFormat('h:i A', $validated['closing_hour'])->format('H:i:s');
-                return $q->where('opening_hour', '<', $op)
-                    ->where('closing_hour', '>', $cls);
+                return $q->where('opening_hour', '<=', $op)
+                    ->where('closing_hour', '>=', $cls);
             })->when(isset($validated['status']) && !empty($validated['status']), function ($q) use ($validated) {
                 return $q->whereIn('status', $validated['status']);
             })->when(isset($validated['service']) && !empty($validated['service']), function ($q) use ($validated) {
