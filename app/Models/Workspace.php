@@ -32,4 +32,9 @@ class Workspace extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'workspace_id', 'id');
+    }
 }

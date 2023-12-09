@@ -19,7 +19,7 @@ class WorkspaceController extends Controller
     {
         $validated = $request->validated();
         
-        $data = Workspace::with(['workspaceImages'])
+        $data = Workspace::withCount('reviews')->with(['workspaceImages'])
             ->when(isset($validated['name']) && !empty($validated['name']), function ($q) use ($validated) {
                 return $q->where('name', 'like', '%' . $validated['name'] . '%');
             })->when(isset($validated['address']) && !empty($validated['address']), function ($q) use ($validated) {
