@@ -28,6 +28,7 @@ class WorkspaceResource extends JsonResource
             'long' => $this->long,
             'average_rating' => $this->average_rating,
             'workspace_images' => $this->whenLoaded('workspaceImages'),
+            'reviews_count' => $this->reviews_count,
         ];
     }
 }
