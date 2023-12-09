@@ -38,7 +38,7 @@ class WorkspaceController extends Controller
                 return $q->whereIn('id', $param);
             })->when(isset($validated['price']) && !empty($validated['price']), function ($q) use ($validated) {
                 return $q->where('price', $validated['price']);
-            })->paginate(3);
+            })->paginate(5);
 
         return response()->json(WorkspaceResource::collection($data)->response()->getData());
     }
