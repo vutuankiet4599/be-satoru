@@ -21,9 +21,8 @@ class WorkspaceController extends Controller
         
         $data = Workspace::withCount('reviews')->with(['workspaceImages'])
             ->when(isset($validated['name']) && !empty($validated['name']), function ($q) use ($validated) {
-                return $q->where('name', 'like', '%' . $validated['name'] . '%');
-            })->when(isset($validated['address']) && !empty($validated['address']), function ($q) use ($validated) {
-                return $q->where('address', 'like', '%' . $validated['address'] . '%');
+                return $q->where('name', 'like', '%' . $validated['name'] . '%')
+                    ->orWhere('address', 'like', '%' . $validated['name'] . '%');
             })->when(isset($validated['area']) && !empty($validated['area']), function ($q) use ($validated) {
                 return $q->whereIn('district_id', $validated['area']);
             })->when(isset($validated['opening_hour']) && !empty($validated['opening_hour']) && isset($validated['closing_hour']) && !empty($validated['closing_hour']), function ($q) use ($validated) {
