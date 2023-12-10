@@ -23,7 +23,6 @@ class WorkspaceSearchRequest extends FormRequest
     {
         return [
             'name' => 'string',
-            'address' => 'string',
             'area' => 'array',
             'area.*' => 'int',
             'opening_hour' => 'string',
