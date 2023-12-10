@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,8 +18,8 @@ class WorkspaceResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'opening_hour' => $this->opening_hour,
-            'closing_hour' => $this->closing_hour,
+            'opening_hour' => Carbon::createFromFormat("H:i:s", $this->opening_hour)->format("H:i"),
+            'closing_hour' => Carbon::createFromFormat("H:i:s", $this->closing_hour)->format("H:i"),
             'description' => $this->description,
             'phone_number' => $this->phone_number,
             'address' => $this->address,
