@@ -37,4 +37,9 @@ class Workspace extends Model
     {
         return $this->hasMany(Review::class, 'workspace_id', 'id');
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'workspaces_services');
+    }
 }
