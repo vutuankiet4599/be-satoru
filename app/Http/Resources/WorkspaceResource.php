@@ -28,8 +28,9 @@ class WorkspaceResource extends JsonResource
             'lat' => $this->lat,
             'long' => $this->long,
             'average_rating' => $this->average_rating,
-            'workspace_images' => $this->whenLoaded('workspaceImages'),
-            'reviews_count' => $this->reviews_count,
+            'workspace_images' => WorkspaceImageResource::collection($this->whenLoaded('workspaceImages')),
+            'reviews_count' => $this->whenCounted('reviews'),
+            'services' => ServiceResource::collection($this->whenLoaded('services')),
         ];
     }
 }

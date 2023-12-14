@@ -7,6 +7,7 @@ use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
 use App\Models\WorkspaceService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class WorkspaceController extends Controller
 {
@@ -50,5 +51,13 @@ class WorkspaceController extends Controller
             ->get();
         
         return response()->json(WorkspaceResource::collection($data));
+    }
+
+    public function find(Request $request, $id)
+    {
+        $data = Workspace::with(['services', 'workspaceImages'])->find($id);
+        return response()->json([
+            "data" => new WorkspaceResource($data)
+        ]);
     }
 }

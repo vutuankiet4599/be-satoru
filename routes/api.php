@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,5 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/workspaces/search', [WorkspaceController::class, 'search']);
 Route::get('/workspaces/recommend', [WorkspaceController::class, 'recommend']);
+Route::get('/workspaces/{id}', [WorkspaceController::class, 'find']);
+
+Route::get('/reviews/workspaces/{id}', [ReviewController::class, 'workspace']);
 
 Route::get('/districts', [WorkspaceController::class, 'index']);
