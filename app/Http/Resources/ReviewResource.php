@@ -18,6 +18,7 @@ class ReviewResource extends JsonResource
             "id" => $this->id,
             "space_rating" => $this->space_rating,
             "wifi_rating" => $this->wifi_rating,
+            "price_rating" => $this->price_rating,
             "average_rating" => $this->average_rating,
             "comment" => $this->comment,
             "user" => new UserResource($this->whenLoaded('user')),
