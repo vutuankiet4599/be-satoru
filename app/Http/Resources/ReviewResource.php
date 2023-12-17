@@ -21,6 +21,8 @@ class ReviewResource extends JsonResource
             "price_rating" => $this->price_rating,
             "average_rating" => $this->average_rating,
             "comment" => $this->comment,
+            "created_at" => $this->created_at,
+            "updated_at" => $this->updated_at,
             "user" => new UserResource($this->whenLoaded('user')),
             "workspace" => new WorkspaceResource($this->whenLoaded('workspace')),
             "review_images" => ReviewImageResource::collection($this->whenLoaded('reviewImages')),
