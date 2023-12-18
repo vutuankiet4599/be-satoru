@@ -7,6 +7,7 @@ use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
 use App\Models\WorkspaceService;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 
 class WorkspaceController extends Controller
@@ -38,6 +39,42 @@ class WorkspaceController extends Controller
                 return $q->whereIn('id', $param);
             })->when(isset($validated['price']) && !empty($validated['price']), function ($q) use ($validated) {
                 return $q->where('price', $validated['price']);
+            })->when(isset($validated['sort_price']), function ($q) use ($validated) {
+                if ($validated['sort_price']) {
+                    return $q->orderBy('price', 'asc');
+                } else {
+                    return $q->orderBy('price', 'desc');
+                }
+            })->when(isset($validated['sort_rating']), function ($q) use ($validated) {
+                if ($validated['sort_rating']) {
+                    return $q->orderBy('average_rating', 'asc');
+                } else {
+                    return $q->orderBy('average_rating', 'desc');
+                }
+            })->when(isset($validated['sort_distance']), function ($q) use ($validated) {
+                if (!isset($validated['lat']) || !$validated['long']) {
+                    return $q;
+                }
+
+                $myLat = $validated['lat'];
+                $myLong = $validated['long'];
+                
+                $condition = $validated['sort_distance'] ? "ASC" : "DESC";
+
+                return $q->orderByRaw(
+                    "
+                        ACOS
+                        (
+                            (
+                                SIN(RADIANS(lat)) * SIN(RADIANS($myLat))
+                            ) + (
+                                COS(RADIANS(lat)) * COS(RADIANS($myLat))
+                            ) * (
+                                COS(RADIANS($myLong) - RADIANS(`long`))
+                            )
+                        ) * 6371 $condition
+                    "
+                );
             })->paginate(5);
 
         return response()->json(WorkspaceResource::collection($data)->response()->getData());
