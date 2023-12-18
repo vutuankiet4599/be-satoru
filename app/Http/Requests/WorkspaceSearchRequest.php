@@ -31,7 +31,12 @@ class WorkspaceSearchRequest extends FormRequest
             'service.*' => 'integer',
             'price' => 'numeric|min:0',
             'status' => 'array',
-            'status.*' => 'in:0,1,2'
+            'status.*' => 'in:0,1,2',
+            'sort_price' => 'boolean',
+            'sort_rating' => 'boolean',
+            'sort_distance' => 'boolean',
+            'lat' => 'numeric|required_with:sort_distance',
+            'long' => 'numeric|required_with:sort_distance',
         ];
     }
 }
