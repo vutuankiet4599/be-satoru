@@ -7,7 +7,6 @@ use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
 use App\Models\WorkspaceService;
 use Carbon\Carbon;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 
 class WorkspaceController extends Controller
@@ -21,7 +20,9 @@ class WorkspaceController extends Controller
     {
         $validated = $request->validated();
         
-        $data = Workspace::withCount('reviews')->with(['workspaceImages'])
+        $data = Workspace::withCount('reviews')
+            ->withAvg('reviews', 'wifi_rating')
+            ->with(['workspaceImages'])
             ->when(isset($validated['name']) && !empty($validated['name']), function ($q) use ($validated) {
                 return $q->where('name', 'like', '%' . $validated['name'] . '%')
                     ->orWhere('address', 'like', '%' . $validated['name'] . '%');
@@ -38,7 +39,10 @@ class WorkspaceController extends Controller
                 $param = WorkspaceService::whereIn('service_id', $validated['service'])->pluck('workspace_id');
                 return $q->whereIn('id', $param);
             })->when(isset($validated['price']) && !empty($validated['price']), function ($q) use ($validated) {
-                return $q->where('price', $validated['price']);
+                return $q->where('min_price', '<=', $validated['price'])
+                    ->where('max_price', '>=', $validated['price']);
+            })->when(isset($validated['categories']) && !empty($validated['categories']), function ($q) use ($validated) {
+                return $q->whereIn('category_id', $validated['categories']);
             })->when(isset($validated['sort_price']), function ($q) use ($validated) {
                 if ($validated['sort_price']) {
                     return $q->orderBy('price', 'asc');
@@ -47,9 +51,9 @@ class WorkspaceController extends Controller
                 }
             })->when(isset($validated['sort_rating']), function ($q) use ($validated) {
                 if ($validated['sort_rating']) {
-                    return $q->orderBy('average_rating', 'asc');
+                    return $q->orderBy('reviews_avg_wifi_rating', 'asc');
                 } else {
-                    return $q->orderBy('average_rating', 'desc');
+                    return $q->orderBy('reviews_avg_wifi_rating', 'desc');
                 }
             })->when(isset($validated['sort_distance']), function ($q) use ($validated) {
                 if (!isset($validated['lat']) || !$validated['long']) {
@@ -84,7 +88,7 @@ class WorkspaceController extends Controller
     {
         $data = Workspace::with(['workspaceImages'])
             ->orderBy('average_rating', 'desc')
-            ->take(12)
+            ->take(6)
             ->get();
         
         return response()->json(WorkspaceResource::collection($data));

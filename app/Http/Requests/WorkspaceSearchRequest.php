@@ -29,6 +29,8 @@ class WorkspaceSearchRequest extends FormRequest
             'closing_hour' => 'string',
             'service' => 'array',
             'service.*' => 'integer',
+            'categories' => 'array',
+            'categories.*' => 'integer',
             'price' => 'numeric|min:0',
             'status' => 'array',
             'status.*' => 'in:0,1,2',
