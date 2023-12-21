@@ -39,8 +39,8 @@ class WorkspaceController extends Controller
                 $param = WorkspaceService::whereIn('service_id', $validated['service'])->pluck('workspace_id');
                 return $q->whereIn('id', $param);
             })->when(isset($validated['price']) && !empty($validated['price']), function ($q) use ($validated) {
-                return $q->where('min_price', '<=', $validated['price'])
-                    ->where('max_price', '>=', $validated['price']);
+                return $q->where('price_min', '<=', $validated['price'])
+                    ->where('price_max', '>=', $validated['price']);
             })->when(isset($validated['categories']) && !empty($validated['categories']), function ($q) use ($validated) {
                 return $q->whereIn('category_id', $validated['categories']);
             })->when(isset($validated['sort_price']), function ($q) use ($validated) {
