@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('workspaces', function (Blueprint $table) {
-            $table->unsignedBigInteger('district_id');
-            $table->foreign('district_id')->references('id')->on('districts')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->dropColumn(['type']);
+            $table->string('web_url');
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -23,8 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('workspaces', function (Blueprint $table) {
-            $table->dropForeign(['district_id']);
-            $table->dropColumn('district_id');
+            $table->dropForeign(['category_id']);
         });
     }
 };

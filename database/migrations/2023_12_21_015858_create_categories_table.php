@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('workspaces_images', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('workspace_id');
-            $table->string('image_url');
-            $table->timestamps();
-            $table->foreign('workspace_id')->references('id')->on('workspaces')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('category_name');
         });
     }
 
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workspaces_images');
+        Schema::dropIfExists('categories');
     }
 };
