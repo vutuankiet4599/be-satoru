@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Http\Request;
@@ -26,4 +27,4 @@ Route::get('/workspaces/{id}', [WorkspaceController::class, 'find']);
 
 Route::get('/reviews/workspaces/{id}', [ReviewController::class, 'workspace']);
 
-Route::get('/districts', [WorkspaceController::class, 'index']);
+Route::get('/districts', [DistrictController::class, 'index']);
