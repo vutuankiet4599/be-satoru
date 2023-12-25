@@ -22,7 +22,7 @@ class WorkspaceSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string',
+            'name' => 'string|nullable',
             'area' => 'array',
             'area.*' => 'int',
             'opening_hour' => 'string',
