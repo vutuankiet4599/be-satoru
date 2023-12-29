@@ -19,29 +19,44 @@ class WorkspaceController extends Controller
     public function search(WorkspaceSearchRequest $request)
     {
         $validated = $request->validated();
+
+        $op = '';
+        $cls = '';
+
+        if (isset($validated['opening_hour']) && !empty($validated['opening_hour'])) {
+            $op = $validated['opening_hour'];
+        } else {
+            $op = '07:30 AM';
+        }
+
+        if (isset($validated['closing_hour']) && !empty($validated['closing_hour']) ) {
+            $cls = $validated['closing_hour'];
+        } else {
+            $cls = '10:00 PM';
+        }
+
+        $op = Carbon::createFromFormat('h:i A', $op)->format('H:i:s');
+        $cls = Carbon::createFromFormat('h:i A', $cls)->format('H:i:s');
         
         $data = Workspace::withCount('reviews')
             ->withAvg('reviews', 'wifi_rating')
             ->with(['workspaceImages'])
+            ->where('opening_hour', '<=', $op)
+            ->where('closing_hour', '>=', $cls)
             ->when(isset($validated['name']) && !empty($validated['name']), function ($q) use ($validated) {
-                return $q->where('name', 'like', '%' . $validated['name'] . '%')
-                    ->orWhere('address', 'like', '%' . $validated['name'] . '%');
+                return $q->where(function ($query) use ($validated) {
+                    $query->where('name', 'like', '%' . $validated['name'] . '%')
+                        ->orWhere('address', 'like', '%' . $validated['name'] . '%');
+                });
             })->when(isset($validated['area']) && !empty($validated['area']), function ($q) use ($validated) {
                 return $q->whereIn('district_id', $validated['area']);
-            })->when(isset($validated['opening_hour']) || isset($validated['closing_hour']), function ($q) use ($validated) {
-                $op = !empty($validated['opening_hour']) ? $validated['opening_hour'] : "7:30 AM";
-                $cls = !empty($validated['closing_hour']) ? $validated['closing_hour'] : "11:00 PM";
-                $op = Carbon::createFromFormat('h:i A', $op)->format('H:i:s');
-                $cls = Carbon::createFromFormat('h:i A', $cls)->format('H:i:s');
-                return $q->where('opening_hour', '<=', $op)
-                    ->where('closing_hour', '>=', $cls);
             })->when(isset($validated['status']) && !empty($validated['status']), function ($q) use ($validated) {
                 return $q->whereIn('status', $validated['status']);
             })->when(isset($validated['service']) && !empty($validated['service']), function ($q) use ($validated) {
                 $param = WorkspaceService::whereIn('service_id', $validated['service'])->pluck('workspace_id');
                 return $q->whereIn('id', $param);
             })->when(isset($validated['price']) && !empty($validated['price']), function ($q) use ($validated) {
-                return $q->where('price_max', '<=', $validated['price'])->orWhere('price_min', '<=', $validated['price']);
+                return $q->where('price_min', '<=', $validated['price']);
             })->when(isset($validated['categories']) && !empty($validated['categories']), function ($q) use ($validated) {
                 return $q->whereIn('category_id', $validated['categories']);
             })->when(isset($validated['sort_price']), function ($q) use ($validated) {
@@ -70,16 +85,7 @@ class WorkspaceController extends Controller
 
                 return $q->orderByRaw(
                     "
-                        ACOS
-                        (
-                            (
-                                SIN(RADIANS(lat)) * SIN(RADIANS($myLat))
-                            ) + (
-                                COS(RADIANS(lat)) * COS(RADIANS($myLat))
-                            ) * (
-                                COS(RADIANS($myLong) - RADIANS(`long`))
-                            )
-                        ) * 6371 $condition
+                        (6371 * acos(cos(radians(lat)) * cos(radians($myLat)) * cos(radians($myLong) - radians(`long`)) + sin(radians(lat)) * sin(radians($myLat)))) $condition
                     "
                 );
             })->paginate(5);
