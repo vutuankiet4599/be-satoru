@@ -19,30 +19,10 @@ class WorkspaceController extends Controller
     public function search(WorkspaceSearchRequest $request)
     {
         $validated = $request->validated();
-
-        $op = '';
-        $cls = '';
-
-        if (isset($validated['opening_hour']) && !empty($validated['opening_hour'])) {
-            $op = $validated['opening_hour'];
-        } else {
-            $op = '07:30 AM';
-        }
-
-        if (isset($validated['closing_hour']) && !empty($validated['closing_hour']) ) {
-            $cls = $validated['closing_hour'];
-        } else {
-            $cls = '10:00 PM';
-        }
-
-        $op = Carbon::createFromFormat('h:i A', $op)->format('H:i:s');
-        $cls = Carbon::createFromFormat('h:i A', $cls)->format('H:i:s');
         
         $data = Workspace::withCount('reviews')
             ->withAvg('reviews', 'wifi_rating')
             ->with(['workspaceImages'])
-            ->where('opening_hour', '<=', $op)
-            ->where('closing_hour', '>=', $cls)
             ->when(isset($validated['name']) && !empty($validated['name']), function ($q) use ($validated) {
                 return $q->where(function ($query) use ($validated) {
                     $query->where('name', 'like', '%' . $validated['name'] . '%')
@@ -59,6 +39,12 @@ class WorkspaceController extends Controller
                 return $q->where('price_min', '<=', $validated['price']);
             })->when(isset($validated['categories']) && !empty($validated['categories']), function ($q) use ($validated) {
                 return $q->whereIn('category_id', $validated['categories']);
+            })->when(isset($validated['opening_hour']) && !empty($validated['opening_hour']), function ($q) use ($validated) {
+                $op = Carbon::createFromFormat('h:i A', $validated['opening_hour'])->format('H:i:s');
+                return $q->where('opening_hour', '<=', $op);
+            })->when(isset($validated['closing_hour']) && !empty($validated['closing_hour']), function ($q) use ($validated) {
+                $cls = Carbon::createFromFormat('h:i A', $validated['closing_hour'])->format('H:i:s');
+                return $q->where('closing_hour', '>=', $cls);
             })->when(isset($validated['sort_price']), function ($q) use ($validated) {
                 if ($validated['sort_price']) {
                     return $q->orderBy('price_min', 'asc')
@@ -86,6 +72,10 @@ class WorkspaceController extends Controller
                 return $q->orderByRaw(
                     "
                         (6371 * acos(cos(radians(lat)) * cos(radians($myLat)) * cos(radians($myLong) - radians(`long`)) + sin(radians(lat)) * sin(radians($myLat)))) $condition
+                    "
+                )->whereRaw(
+                    "
+                    (6371 * acos(cos(radians(lat)) * cos(radians($myLat)) * cos(radians($myLong) - radians(`long`)) + sin(radians(lat)) * sin(radians($myLat)))) <= 3
                     "
                 );
             })->paginate(5);
