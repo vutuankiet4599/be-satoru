@@ -15,5 +15,5 @@
     -   Vào file `.env` vừa tạo chỉnh sửa các thông tin liên quan đến database cho phù hợp với database vừa tạo
     -   Chạy lệnh `php artisan key:generate` để tạo app key
     -   Chạy lệnh `php artisan migrate` để tạo bảng trong database
-    -   Thêm dữ liệu đã chuẩn bị sẵn vào trong database
+    -   Thêm dữ liệu đã chuẩn bị sẵn vào trong database (trong file data_satoru.sql)
     -   Chạy lệnh `php artisan serve` để chạy project. Project sẽ được chạy mặc định ở http://localhost:8000
