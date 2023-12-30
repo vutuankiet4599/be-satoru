@@ -39,6 +39,7 @@ class WorkspaceSearchRequest extends FormRequest
             'sort_distance' => 'boolean',
             'lat' => 'numeric|required_with:sort_distance',
             'long' => 'numeric|required_with:sort_distance',
+            'nearest' => 'boolean',
         ];
     }
 }

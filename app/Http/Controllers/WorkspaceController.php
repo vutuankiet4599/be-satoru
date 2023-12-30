@@ -45,6 +45,21 @@ class WorkspaceController extends Controller
             })->when(isset($validated['closing_hour']) && !empty($validated['closing_hour']), function ($q) use ($validated) {
                 $cls = Carbon::createFromFormat('h:i A', $validated['closing_hour'])->format('H:i:s');
                 return $q->where('closing_hour', '>=', $cls);
+            })->when(isset($validated['nearest']), function ($q) use ($validated) {
+                if (!isset($validated['lat']) || !$validated['long']) {
+                    return $q;
+                }
+                $myLat = $validated['lat'];
+                $myLong = $validated['long'];
+                if ($validated['nearest']) {
+                    
+                    return $q->whereRaw(
+                        "
+                        (6371 * acos(cos(radians(lat)) * cos(radians($myLat)) * cos(radians($myLong) - radians(`long`)) + sin(radians(lat)) * sin(radians($myLat)))) <= 3
+                        "
+                    );
+                }
+                return $q;
             })->when(isset($validated['sort_price']), function ($q) use ($validated) {
                 if ($validated['sort_price']) {
                     return $q->orderBy('price_min', 'asc')
@@ -72,10 +87,6 @@ class WorkspaceController extends Controller
                 return $q->orderByRaw(
                     "
                         (6371 * acos(cos(radians(lat)) * cos(radians($myLat)) * cos(radians($myLong) - radians(`long`)) + sin(radians(lat)) * sin(radians($myLat)))) $condition
-                    "
-                )->whereRaw(
-                    "
-                    (6371 * acos(cos(radians(lat)) * cos(radians($myLat)) * cos(radians($myLong) - radians(`long`)) + sin(radians(lat)) * sin(radians($myLat)))) <= 3
                     "
                 );
             })->paginate(5);
